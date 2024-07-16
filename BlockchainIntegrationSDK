@@ -1,0 +1,36 @@
+// sdk/transaction.js
+
+const web3 = require('./config');
+
+const getBalance = async (address) => {
+    try {
+        const balance = await web3.eth.getBalance(address);
+        return web3.utils.fromWei(balance, 'ether');
+    } catch (error) {
+        console.error('Error getting balance:', error);
+        throw error;
+    }
+};
+
+const sendTransaction = async (from, to, value, privateKey) => {
+    try {
+        const tx = {
+            from,
+            to,
+            value: web3.utils.toWei(value, 'ether'),
+            gas: 21000
+        };
+
+        const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
+        const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+        return receipt;
+    } catch (error) {
+        console.error('Error sending transaction:', error);
+        throw error;
+    }
+};
+
+module.exports = {
+    getBalance,
+    sendTransaction
+};
